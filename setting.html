@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href='https://cdn.jsdelivr.net/npm/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet">
+    <title>Finance Settings</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif; }
+
+            body { background: #f8fafc; display: flex; }
+
+            /* SIDEBAR */
+            .sidebar { width: 250px; background: #ffffff; height: 100vh; padding: 30px 20px; border-right: 1px solid #e6e6e6; position: fixed; }
+
+            .sidebar h2 { color: #0cb463; margin-bottom: 5px; font-size: 22px; font-weight: 700; }
+
+            .sidebar small { color: #64748b; }
+
+            .menu { margin-top: 40px; }
+            .menu-item { display: flex; align-items: center; gap: 10px; text-decoration: none; padding: 12px; margin-bottom: 10px; border-radius: 10px; cursor: pointer; color: #475569; font-weight: bold; }
+
+            .active { background: #0cb463; color: #e8f5e9 !important; font-weight: bold; }
+
+            .menu-item:not(.active):hover { background-color: rgba(12, 180, 99, 0.1); }
+
+            .signout { position: absolute; bottom: 30px; width: 80%; padding: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); text-align: center; border-radius: 10px; cursor: pointer; }
+            .signout:hover { background: #0cb463; color: #fff; }
+
+            .content { margin-left: 230px; padding: 0 2px; width: calc(100% - 5px); }
+
+            .topbar { background: #ffffff; display: flex; justify-content: space-between; align-items: center; padding: 20px 40px; margin-bottom: 30px; box-shadow: 0 2px 10px rgba(0,0,0,0.3);}
+            
+
+            .subtitle { color: #777; margin-bottom: 25px; }
+
+            .user-info { display: flex; align-items: center; justify-content: flex-end; gap: 15px; }
+            .user-text { text-align: right; }
+            .user-info h4 { margin-bottom: 3px; }
+            .user-info small { color: #64748b; font-size: 14px; }
+            .user-info i { font-size: 30px; color: #64748b; background-color: rgba(100, 116, 139, 0.1); padding: 8px; border-radius: 50%; }
+
+            /* MAIN CONTAINER */
+            .main { max-width: 1200px; width: 100%; margin: 90px auto; font-family: Arial, sans-serif; }
+            .settings-tabs { justify-content: space-between; display: flex; gap: 40px; background: #e6e6e6ff; padding: 14px 20px; border-radius: 14px; }
+
+            .settings-tabs .tab { padding: 10px 25px; border-radius: 10px; cursor: pointer; color: #333; font-weight: 500; }
+            .settings-tabs .tab:nth-child(3) { background: #ffffff !important; color: #000000 !important; font-weight: 600; }
+            .settings-tabs .tab.active { background: white; color: #ff0000; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+
+            .danger-zone { margin-top: 35px; background: #fff5f5; border: 1px solid #f8c7c7; border-radius: 12px; padding: 25px 30px; }
+
+            .danger-zone h2 { color: #dc2626; margin-bottom: 20px; font-size: 22px; }
+            .danger-content { display: flex; justify-content: space-between; align-items: center; }
+
+            .danger-text h3 { color: #dc2626; margin-bottom: 5px; font-size: 18px; }
+
+            .danger-text p { margin: 0; color: #a75b5b; font-size: 14px; }
+
+            .delete-btn { background: #f44336; border: none; padding: 10px 25px; border-radius: 8px; color: white; cursor: pointer; font-size: 14px; font-weight: bold; }
+
+            .delete-btn:hover { background: #d9362a; }
+
+
+    </style>
+</head>
+<body>
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+        <h2>Finance</h2>
+        <small>Personal Tracker</small>
+
+        <div class="menu">
+            <a class="menu-item" href="dashboard.html">📊 Dashboard</a>
+            <a class="menu-item " href="transactions.html">📄 Transactions</a>
+            <a class="menu-item " href="categories.html">🏷️ Categories</a>
+            <a class="menu-item " href="analytics.html">📈 Analytics</a>
+            <a class="menu-item active" href="setting.html">⚙️ Settings</a>
+        </div>
+
+        <div class="signout">↪ Sign Out</div>
+    </div>
+
+    <div class="content">
+
+        <!-- TOPBAR -->
+        <div class="topbar">
+            <h2>Settings</h2>
+            <div class="user-info">
+                <div class="user-text">
+                    <h4>John Doe</h4>
+                    <small>john@example.com</small>
+                </div>
+                <i class='bx  bx-user'></i> 
+            </div>
+        </div>
+
+        <div class="main">
+
+            <!-- TOP NAV TABS -->
+            <div class="settings-tabs">
+                <div class="tab">👤 Profile</div>
+                <div class="tab">⚙️ Preferences</div>
+                <div class="tab active">⚠️ Account</div>
+            </div>
+
+            <!-- DANGER ZONE BOX -->
+            <div class="danger-zone">
+                <h2>Danger Zone</h2>
+
+                <div class="danger-content">
+                    <div class="danger-text">
+                        <h3>Delete Account</h3>
+                        <p>This action cannot be undone</p>
+                    </div>
+
+                    <button class="delete-btn">Delete Account</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</body>
+</html>
