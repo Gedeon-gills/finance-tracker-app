@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Auth Page</title>
-
+    <script type="module" src="firebaseauth.js" defer></script>
     <style>
         body { font-family: Arial, sans-serif; background: #f4f8f7; display: flex; justify-content: center; padding-top: 50px; min-height: 100vh; }
 
@@ -50,106 +50,102 @@
 
         p {color: #807c7cff; font-size: 15px;}
 
-        .error { color: red; font-size: 13px; margin-top: -10px; margin-bottom: 10px; }
-        
-        @media (max-width: 768px) {
-            body { padding-top: 10px; }
-
-            .both { grid-template-columns: 1fr; width: 95%; gap: 10px; margin-top: 10px; text-align: center; }
-
-            .welcoming { order: 1;}
-
-            .welcoming h1 { font-size: 28px; }
-
-            .welcoming p { display: none; }
-
-            .welcoming ul li { display: none; }
-
-            .logo { width: 80px; }
-
-            .container { width: 80%; padding: 30px; order: 2; }
-
-            .tabs { font-size: 13px;}
-
-            .form-group { align-items: flex-start; width: 100%; }
-
-            label { text-align: left; align-self: flex-start; width: 100%; }
-            
-            input { width: 90%; padding: 8px 10px; font-size: 14px; }
-
-            .form-group .character { font-size: 12px; }
-            
-
-    }
-
+        .messageDiv { background-color: hsl(327, 90%, 28%); color: white; padding: 10px 20px; border-radius: 5px; margin: 10px; font-size: 1rem; opacity: 0; animation: fadeOut 7s forwards; }
     </style>
 
 </head>
 <body>
-<div class="both">
-    <div class="welcoming">
-        <h2 class="logo"><svg xmlns="http://www.w3.org/2000/svg" width="72" height="72" viewBox="0 0 24 24"><path fill="currentColor" d="M8 13.65V6h3v7.65l-1.5-1.4zm5 1.5V2h3v10.15zM3 18.6V10h3v5.6zm0 2.45l6.45-6.45L13 17.65l5.6-5.6H17v-2h5v5h-2v-1.6l-6.9 6.9l-3.55-3.05l-3.75 3.75z"/></svg></h2>
-        <h1> Manage Your money </h1>
-        <p> Track expenses, visualize spending patterns, and <br>take control of your finances with our intuitive <br>personal finance tracker.
-        <ul>
-            <li> Real-time expense tracking</li>
-            <li> Smart analytics & insights </li>
-            <li> Export & backup your data </li>
-        </ul>
-    </div>
-
-    <div class="container">
-
-        <!-- Tabs -->
-        <div class="tabs">
-            <div class="tab active" id="signinTab">Sign In</div>
-            <div class="tab" id="createTab">Create Account</div>
+    <div class="both">
+        <div class="welcoming">
+            <h2 class="logo"><svg xmlns="http://www.w3.org/2000/svg" width="72" height="72" viewBox="0 0 24 24"><path fill="currentColor" d="M8 13.65V6h3v7.65l-1.5-1.4zm5 1.5V2h3v10.15zM3 18.6V10h3v5.6zm0 2.45l6.45-6.45L13 17.65l5.6-5.6H17v-2h5v5h-2v-1.6l-6.9 6.9l-3.55-3.05l-3.75 3.75z"/></svg></h2>
+            <h1> Manage Your money </h1>
+            <p> Track expenses, visualize spending patterns, and <br>take control of your finances with our intuitive <br>personal finance tracker.
+            <ul>
+                <li> Real-time expense tracking</li>
+                <li> Smart analytics & insights </li>
+                <li> Export & backup your data </li>
+            </ul>
         </div>
 
-        <!-- Sign In Form -->
-        <form id="signinForm">
-            <div class="form-group">
-                <label>Email </label>
-                <input type="email" placeholder="you@example.com" required>
-            </div>
-            <div class="form-group">
-                <label>Password </label>
-                <input type="password" placeholder="Password" required>
-            </div>
-            <button>Sign In</button>
-            
-            <div class="divider">
-                <span>or continue with</span>
+        <div class="container">
+
+            <!-- Tabs -->
+            <div class="tabs">
+                <div class="tab active" id="signinTab">Sign In</div>
+                <div class="tab" id="createTab">Create Account</div>
             </div>
 
-            <div class="google-btn">
-                <img src="https://www.svgrepo.com/show/355037/google.svg" width="20">
-                Google
-            </div>
-        </form>
+            <!-- Sign In Form -->
+            <form id="signinForm">
 
-        <!-- Create Account Form -->
-        <form id="createForm" class="hidden">
-            <div class="form-group">
-                <label> Full Name </label>
-                <input type="text" placeholder="John Doe" required>
-            </div>
-            <div class="form-group">
-                <label> Email </label>
-                <input type="email" placeholder="you@example.com" required>
-            </div>
-            <div class="form-group">
-                <label> Password </label>
-                <input type="password" placeholder="Create Password" required>
-                <p class="character"> Password must be at least 8 characters long
-            </div>
-            <button>Create Account</button>
-            <p>By signing up, you agree to our terms of service and Privacy Policy
-        </form>
+                <div id="signInMessage" class="messageDiv" style="display:none;"></div>
+                
+                <div class="form-group">
+                    <label>Email </label>
+                    <input id="email" type="email" placeholder="you@example.com" required>
+                </div>
+                <div class="form-group">
+                    <label>Password </label>
+                    <input id="password" type="password" placeholder="Password" required>
+                </div>
+                <button id="signInBtn" type="submit">Sign In</button>
+                
+                <div class="divider">
+                    <span>or continue with</span>
+                </div>
+
+                <div id="google-btn" class="google-btn">
+                    <img src="https://www.svgrepo.com/show/355037/google.svg" width="20">
+                    Google
+                </div>
+            </form>
+
+            <!-- Create Account Form -->
+            <form id="createForm" class="hidden">
+
+                <div id="signUpMessage" class="messageDiv" style="display:none;"></div>
+                
+                <div class="form-group">
+                    <label> Full Name </label>
+                    <input id="fullName" type="text" placeholder="John Doe" required>
+                </div>
+                <div class="form-group">
+                    <label> Email </label>
+                    <input id="rEmail" type="email" placeholder="you@example.com" required>
+                </div>
+                <div class="form-group">
+                    <label> Password </label>
+                    <input id="rPassword" type="password" placeholder="Create Password" required>
+                    <p class="character"> Password must be at least 8 characters long
+                </div>
+                <button id="createBtn" type="submit">Create Account</button>
+                <p>By signing up, you agree to our terms of service and Privacy Policy
+            </form>
+        </div>
     </div>
-</div>
+    <script type="module">
+        const signinTab = document.getElementById('signinTab');
+        const createTab = document.getElementById('createTab');
 
-<script src="auth.js"></script>
+        const signinForm = document.getElementById('signinForm');
+        const createForm = document.getElementById('createForm');
 
+            // change tabs when clicked
+            signinTab.addEventListener('click', () => {
+            signinTab.classList.add('active');
+            createTab.classList.remove('active');
+
+            signinForm.classList.remove('hidden');
+            createForm.classList.add('hidden');
+            });
+
+            createTab.addEventListener('click', () => {
+            createTab.classList.add('active');
+            signinTab.classList.remove('active');
+
+            createForm.classList.remove('hidden');
+            signinForm.classList.add('hidden');
+        });
+    </script>
 </body>
 </html>
