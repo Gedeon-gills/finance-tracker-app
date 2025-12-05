@@ -104,7 +104,7 @@ import { getFirestore, doc, getDoc  } from "https://www.gstatic.com/firebasejs/1
 
             yesBtn.addEventListener('click', () => {
                 localStorage.removeItem('loggedInUserId');
-                window.location.href = 'signup.html';
+                window.location.href = 'signUp.html';
             });
 
             noBtn.addEventListener('click', () => {

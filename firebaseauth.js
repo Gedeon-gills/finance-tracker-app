@@ -93,4 +93,12 @@ import { getFirestore, doc, setDoc  } from "https://www.gstatic.com/firebasejs/1
       });
   })
 
+  const googleSignIn = document.getElementById('google-btn');
+    googleSignIn.addEventListener('click', (e) => {
+      e.preventDefault();
+      showMessage('Google Sign-In is currently under development.', 'signInMessage');
+  });
+
+
+
   
