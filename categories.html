@@ -52,7 +52,7 @@
 
             .actions { display: flex; align-items: center; gap: 10px; }
 
-            .add-btn { background: #0cb463; padding: 10px 20px; border-radius: 8px; color: #fff; cursor: pointer;  }
+            .add-btn { background: #0cb463; padding: 10px 20px; border-radius: 8px; color: #fff; cursor: pointer;  z-index: 3000; position: relative;}
             .add-btn:hover {opacity: 0.9; }
 
             /* CARDS */
@@ -90,6 +90,27 @@
             .actions i { font-size: 20px; cursor: pointer; margin-left: 12px; color: #555; }
 
             .actions i:hover { color: #000; }
+            .selected-option { position: relative; padding-right: 25px !important; }
+
+            .selected-option::after { content: "✓"; position: absolute; right: 12px; top: 50%; transform: translateY(-50%); font-weight: bold; color: #0cb463; }
+
+            #colorOptions li { position: relative; padding-left: 28px !important; }
+            #colorOptions li::before { content: ""; position: absolute; left: 10px; top: 50%; width: 12px; height: 12px; border-radius: 50%; transform: translateY(-50%); }
+            #colorOptions li[data-value="Red"]::before { background: red; }
+            #colorOptions li[data-value="Green"]::before { background: green; }
+            #colorOptions li[data-value="Blue"]::before { background: blue; }
+            #colorOptions li[data-value="Orange"]::before { background: orange; }
+            #colorOptions li[data-value="Purple"]::before { background: purple; }
+            #colorOptions li[data-value="Pink"]::before { background: pink; }
+            #colorOptions li[data-value="Yellow"]::before { background: yellow; }
+            #colorOptions li[data-value="Emerald"]::before { background: #2ecc71; }
+            #colorOptions li[data-value="Gray"]::before { background: gray; }
+
+            
+            .color-bullet { display: inline-block; width: 12px; height: 12px; border-radius: 50%; margin-right: 8px; vertical-align: middle; box-shadow: 0 0 0 1px rgba(0,0,0,0.06) inset; }
+
+
+            
     </style>
 </head>
 <body>
@@ -133,7 +154,7 @@
                     <p class="subtitle">Manage your transaction categories</p>
                 </div>
                 <div class="actions">
-                    <div class="add-btn">+ Add Category</div>
+                    <div id="addCategoryBtn" class="add-btn">+ Add Category</div>
                 </div>
             </div>
 
@@ -259,5 +280,280 @@
             </div>
         </div>
     </div>
+    <script>
+        const addCategoryBtn = document.getElementById('addCategoryBtn');
+
+        addCategoryBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+
+            // Overlay
+            const modal = document.createElement('div');
+            modal.style.position = 'fixed';
+            modal.style.top = 0;
+            modal.style.left = 0;
+            modal.style.right = 0;
+            modal.style.bottom = 0;
+            modal.style.background = 'rgba(0,0,0,0.4)';
+            modal.style.display = 'flex';
+            modal.style.justifyContent = 'center';
+            modal.style.alignItems = 'center';
+            modal.style.zIndex = '2000';
+
+            // Modal content box
+            const box = document.createElement('div');
+            box.style.width = '430px';
+            box.style.background = '#fff';
+            box.style.borderRadius = '16px';
+            box.style.padding = '30px';
+            box.style.fontFamily = 'Inter, sans-serif';
+            box.style.position = 'relative';
+
+            
+            box.innerHTML = `
+                <h2 style="margin:0; font-weight:600; font-size:20px;">Add Category</h2>
+
+                <!-- FORM -->
+                <div style="margin-top:20px;">
+                    <label style="font-size:14px; font-weight:700;">Name</label>
+                        <input id="nameInput" type="text" placeholder="Category Name"
+                            style="width:100%; margin-top:6px; margin-bottom:18px; 
+                            padding:10px; border:1px solid #dce1e7; border-radius:8px; transition:0.2s;">
+                    
+
+                    <!-- CUSTOM DROPDOWN (replaces native select) -->
+                    <label style="font-size:14px; font-weight:700;">Type </label>
+                    <div id="typeCustom" style="position:relative; margin-top:6px; margin-bottom:16px;">
+                        <button id="typeTrigger" type="button"
+                            style="width:100%; text-align:left; padding:10px; border:1px solid #dce1e7; border-radius:8px; background:white; cursor:pointer;">
+                            Select Type 
+                        </button>
+                        <ul id="typeOptions"
+                            style="position:absolute; left:0; right:0; margin:6px 0 0 0; padding:6px 0; list-style:none;
+                                max-height:160px; overflow:auto; background:#fff; border:1px solid #e6e9ee; border-radius:8px;
+                                box-shadow:0 6px 18px rgba(0,0,0,0.08); display:none; z-index:3000;">
+                            <li data-value="Income" style="padding:10px 12px; cursor:pointer;" bullet>Income</li>
+                            <li data-value="Expense" style="padding:10px 12px; cursor:pointer;">Expense</li>
+                        </ul>
+                        <!-- hidden input to store the selected value so your existing submit logic can read it -->
+                        <input type="hidden" id="colorValue" value="">
+                    </div>
+
+                    <label style="font-size:14px; font-weight:700;">Color </label>
+                    <div id="colorCustom" style="position:relative; margin-top:6px; margin-bottom:16px;">
+                        <button id="colorTrigger" type="button"
+                            style="width:100%; text-align:left; padding:10px; border:1px solid #dce1e7; border-radius:8px; background:white; cursor:pointer;">
+                            Select Color 
+                        </button>
+                        <ul id="colorOptions"
+                            style="position:absolute; left:0; right:0; margin:6px 0 0 0; padding:6px 0; list-style:none;
+                                max-height:160px; overflow:auto; background:#fff; border:1px solid #e6e9ee; border-radius:8px;
+                                box-shadow:0 6px 18px rgba(0,0,0,0.08); display:none; z-index:3000;">
+                            <li data-value="Red"     data-color="#ff3b30" style="padding:10px 12px; list-style:none; cursor:pointer;">Red</li>
+                            <li data-value="Green"   data-color="#34c759" style="padding:10px 12px; list-style:none; cursor:pointer;">Green</li>
+                            <li data-value="Blue"    data-color="#007aff" style="padding:10px 12px; list-style:none; cursor:pointer;">Blue</li>
+                            <li data-value="Orange"  data-color="#ff9500" style="padding:10px 12px; list-style:none; cursor:pointer;">Orange</li>
+                            <li data-value="Purple"  data-color="#af52de" style="padding:10px 12px; list-style:none; cursor:pointer;">Purple</li>
+                            <li data-value="Pink"    data-color="#ff2d55" style="padding:10px 12px; list-style:none; cursor:pointer;">Pink</li>
+                            <li data-value="Yellow"  data-color="#ffcc00" style="padding:10px 12px; list-style:none; cursor:pointer;">Yellow</li>
+                            <li data-value="Emerald" data-color="#2ecc71" style="padding:10px 12px; list-style:none; cursor:pointer;">Emerald</li>
+                            <li data-value="Gray"    data-color="#8e8e93" style="padding:10px 12px; list-style:none; cursor:pointer;">Gray</li>
+                        </ul>
+                        <!-- hidden input to store the selected value so your existing submit logic can read it -->
+                        <input type="hidden" id="colorValue" value="">
+                    </div>
+
+                    
+
+                </div>
+
+                <!-- Buttons -->
+                <div style="display:flex; justify-content:space-between; margin-top:10px;">
+                    <button id="cancelBtn"
+                        style="padding:10px 24px; border-radius:8px; border:1px solid #d4d9df; background:#fff;
+                        cursor:pointer; font-weight:500;">Cancel</button>
+
+                    <button id="submitBtn"
+                        style="padding:10px 24px; border-radius:8px; background:#0cb463; border:none; color:white;
+                        cursor:pointer; font-weight:500;">Create</button>
+                </div>
+            `;
+
+            
+
+            modal.appendChild(box);
+            document.body.appendChild(modal);
+
+            
+            // Button hover effects (your existing code)
+            const submitBtn = box.querySelector("#submitBtn");
+            const clearBtn = box.querySelector("#cancelBtn");
+
+            submitBtn.addEventListener("mouseenter", () => {
+                submitBtn.style.background = "rgba(12, 180, 99, 0.8)";   
+            });
+            submitBtn.addEventListener("mouseleave", () => {
+                submitBtn.style.background = "#0cb463";   
+            });
+
+            clearBtn.addEventListener("mouseenter", () => {
+                clearBtn.style.background = "#0cb463"; 
+                clearBtn.style.color = "white";  
+            });
+            clearBtn.addEventListener("mouseleave", () => {
+                clearBtn.style.background = "#d4d9df"; 
+                clearBtn.style.color = "black";  
+            });
+
+
+            // GREEN FOCUS EFFECT FOR *ALL* INPUTS (keeps your outline removal)
+            box.querySelectorAll('input[type="number"], input[type="date"], input[type="text"], input[type="hidden"]').forEach(field => {
+                field.addEventListener('focus', () => {
+                    field.style.outline = 'none';
+                    field.style.outlineColor = 'transparent';
+                    field.style.border = '1.5px solid #0cb463';
+                    field.style.boxShadow = '0 0 0 2px rgba(12,180,99,0.2)';
+                });
+                field.addEventListener('blur', () => {
+                    // hidden input should not change border so skip it
+                    if (field.type === 'hidden') return;
+                    field.style.border = '1px solid #dce1e7';
+                    field.style.boxShadow = 'none';
+                });
+            });
+
+            
+            // CUSTOM DROPDOWN LOGIC
+            const typeTrigger = box.querySelector('#typeTrigger');
+            const colorTrigger = box.querySelector('#colorTrigger');
+
+            const typeOptionsList = box.querySelector('#typeOptions');
+            const colorOptionsList = box.querySelector('#colorOptions');
+
+            const typeOptions = typeOptionsList.querySelectorAll("li");
+            const colorOptions = colorOptionsList.querySelectorAll("li");
+
+            const hiddenType = box.querySelector('#typeValue');
+            const hiddenColor = box.querySelector('#colorValue');
+            
+
+            // Close all
+            function closeAllDropdowns() {
+                typeOptionsList.style.display = "none";
+                colorOptionsList.style.display = "none";
+            }
+
+            //  Open Type
+            typeTrigger.addEventListener("click", (e) => {
+                e.stopPropagation();
+
+                // Close the other dropdown
+                colorOptionsList.style.display = "none";
+
+                // Toggle type dropdown
+                typeOptionsList.style.display =
+                    typeOptionsList.style.display === "block" ? "none" : "block";
+
+                // Add green border
+                typeTrigger.style.border = "1.5px solid #0cb463";
+                typeTrigger.style.boxShadow = "0 0 0 2px rgba(12,180,99,0.2)";
+            });
+
+            colorTrigger.addEventListener("click", (e) => {
+                e.stopPropagation();
+
+                // Close the other dropdown
+                typeOptionsList.style.display = "none";
+
+                // Toggle color dropdown
+                colorOptionsList.style.display =
+                    colorOptionsList.style.display === "block" ? "none" : "block";
+
+                // Add green border
+                colorTrigger.style.border = "1.5px solid #0cb463";
+                colorTrigger.style.boxShadow = "0 0 0 2px rgba(12,180,99,0.2)";
+            });
+
+            // When selecting TYPE → close dropdown
+            typeOptions.forEach(li => {
+                li.addEventListener("click", (e) => {
+                    e.stopPropagation();
+
+                    const value = li.dataset.value;
+
+                    // remove previous ticks
+                    typeOptions.forEach(opt => opt.classList.remove("selected-option"));
+
+                    // add tick to this option
+                    li.classList.add("selected-option");
+
+                    // update button
+                    typeTrigger.textContent = value;
+                    hiddenType.value = value;
+
+                    typeOptionsList.style.display = "none";
+                    typeTrigger.style.border = "1.5px solid #0cb463";
+                    typeTrigger.style.boxShadow = "0 0 0 2px rgba(12,180,99,0.2)";
+                });
+            });
+            
+
+            //  When selecting COLOR → keep bullet + close dropdown
+            colorOptions.forEach(li => {
+                li.addEventListener("click", (e) => {
+                    e.stopPropagation();
+
+                    const value = li.dataset.value;
+                    const bulletColor = li.dataset.color;
+
+                    // remove previous ticks
+                    colorOptions.forEach(opt => opt.classList.remove("selected-option"));
+
+                    // add tick to this one
+                    li.classList.add("selected-option");
+
+                    // update button text with bullet
+                    hiddenColor.value = value;
+                    colorTrigger.innerHTML = `
+                        <span class="color-bullet" style="background:${bulletColor};"></span>
+                        ${value}
+                    `;
+
+                    colorOptionsList.style.display = "none";
+                    colorTrigger.style.border = "1.5px solid #0cb463";
+                    colorTrigger.style.boxShadow = "0 0 0 2px rgba(12,180,99,0.2)";
+                });
+            });
+
+
+
+            
+            // Click outside → close everything
+            
+            document.addEventListener("click", (e) => {
+                if (!box.contains(e.target)) {
+                    closeAllDropdowns();
+                }
+            });
+
+
+
+            // Close modal handlers
+            box.querySelector('#cancelBtn').onclick = () => modal.remove();
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) modal.remove();
+            });
+
+            // Submit handler: read hidden input for type
+            box.querySelector('#submitBtn').onclick = () => {
+                const type = box.querySelector('#typeValue').value; // from custom dropdown
+                const color = box.querySelector('#colorValue').value; // from custom dropdown
+                const name = box.querySelector('#nameInput').value;
+
+                console.log({ type, color, name });
+                modal.remove();
+            };
+        });
+    </script>
+
 </body>
 </html>
