@@ -20,6 +20,8 @@
 
             .sidebar small { color: #64748b; }
 
+            .hamburgerMenu, .close { display: none; }
+
             .menu { margin-top: 40px; }
             .menu-item { display: flex; align-items: center; gap: 10px; text-decoration: none;  padding: 12px; margin-bottom: 10px; border-radius: 10px; cursor: pointer; color: #475569; font-weight: bold; }
 
@@ -43,6 +45,9 @@
             .user-info h4 { margin-bottom: 3px; }
             .user-info small { color: #64748b; font-size: 14px; }
             .user-info i { font-size: 30px; color: #64748b; background-color: rgba(100, 116, 139, 0.1); padding: 8px; border-radius: 50%; }
+
+            .topbar-signout { position: absolute; top: 70px; right: 20px; background: #fff; color: #dc2626; padding: 12px 18px; border-radius: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); display: none; z-index: 9999; cursor: pointer; }
+            .topbar-signout:hover { background: #0cb463; color: white; }
 
             .welcoming { margin-bottom: 30px; margin-left: 100px;}
             .welcoming h1 { font-size: 26px; margin-bottom: 5px;}
@@ -69,7 +74,7 @@
             /* TRANSACTIONS */
             .transactions { margin-top: 30px; }
 
-            .transactions h3 { margin-bottom: -25px; }
+            .transactions h3 { margin-bottom: -35px; }
 
             .add-btn { background: #0cb463; padding: 10px 20px; border-radius: 8px; color: #fff; cursor: pointer; float: right; }
             .add-btn:hover {opacity: 0.9; }
@@ -82,6 +87,45 @@
             .t-left span { color: #64748b; font-size: 13px; }
             .green { color: #0cb463; font-weight: bold; }
             .red { color: #dc2626; font-weight: bold; }
+
+            @media (max-width: 768px) {
+                body { flex-direction: column; }
+
+                .sidebar { width: 100%; height: auto; position: relative; padding: 15px 20px; border-right: none; border-bottom: 1px solid #e6e6e6; }
+
+                .menu { display: none; position: fixed; top: 40px; left: 0; width: 100%; height: calc(100vh - 70px); background: #ffffff; z-index: 9990; flex-direction: column; padding: 20px; overflow-y: auto; }
+                .menu.open { display: flex; }
+                .body-no-scroll { height: 100vh; overflow: hidden; }
+
+                .hamburgerMenu { display: block; font-size: 26px; cursor: pointer; position: absolute; top: 20px; right: 20px; color: #0cb463; font-weight: bold; z-index: 10001;}
+
+                .close { display: none; font-size: 34px; cursor: pointer; position: absolute; top: 20px; right: 20px; color: #0cb463; font-weight: bold; z-index: 10002; }
+
+                .sidebar .signout { display: none; }
+                .menu-open .signout { display: block; position: fixed;  bottom: 20px; width: 350px; padding: 12px; text-align: center; background: #fff; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); z-index: 10005; }
+                .sidebar.open { left: 0; }
+                
+
+                .content { margin-left: 0; padding: 10px; width: 100%; }
+
+                .topbar { padding: 15px 20px;  margin-bottom: 20px; }
+                .user-info h4 { font-size: 13px;}
+                .user-info small { font-size: 11px;}
+                .user-info i { font-size: 20px;}
+
+                .welcoming { margin-left: 0; text-align: center; }
+                .welcoming h1 { font-size: 22px; }
+
+                .cards { flex-direction: column; gap: 15px; }
+
+                .card { width: 100%; }
+
+                .chart-box { padding: 15px; }
+
+                .transaction { flex-direction: column; align-items: flex-start; gap: 40px; }
+
+                #addTransactionBtn { float: none; width: 100%; text-align: center; margin-top: 50px; }
+            }       
 
     </style>
 </head>
@@ -99,6 +143,12 @@
             <a class="menu-item" href="analytics.html">📈 Analytics</a>
             <a class="menu-item" href="setting.html">⚙️ Settings</a>
         </div>
+        <div class="hamburgerMenu" id="hamburgerMenu">
+                ☰
+            </div>
+            <div class="close" id="close">
+                &times;
+            </div>
 
         <div id="signoutBtn" class="signout">↪ Sign Out</div>
     </div>
@@ -117,6 +167,10 @@
             </div>
             
         </div>
+
+        <div id="topbarSignout" class="topbar-signout">
+            ↪ Sign Out
+        </div>
         <div class="welcoming">
             <h1 id="welcomeUser">Welcome!</h1>
             <p class="subtitle">Here's your financial overview for this month</p>
@@ -131,19 +185,19 @@
                 <div class="card">
                     <i class='bx  bx-dollar'></i>
                     <h4>Total Balance</h4>
-                    <div class="amount">$8,234.56</div>
+                    <div id="totalBalance" class="amount">$0.00</div>
                 </div>
 
                 <div class="card">
                     <i class='bx  bx-trending-up'></i> 
                     <h4>This Month Income</h4>
-                    <div class="amount">$6,200.00</div>
+                    <div id="totalIncome" class="amount">$0.00</div>
                 </div>
 
                 <div class="card">
                     <i class='bx  bx-trending-down'></i> 
                     <h4>This Month Expense </h4> 
-                    <div class="amount">$1,250.50</div>
+                    <div id="totalExpenses" class="amount">$0.00</div>
                 </div>
             </div>
 
@@ -151,9 +205,12 @@
             <div class="chart-box">
                 <h3>Balance Trend</h3>
 
-                <div style="margin-top: 20px;">
+                 <div class="chart-wrap" style="margin-top: 20px;">
                     <canvas id="balanceChart" style="height: 300px;"></canvas>
                 </div>
+                <p id="chartEmptyNotice" style="margin-top:8px; color:#64748b; font-size:13px; display:none;">
+                    No chart data yet — add a transaction to see your balance trend.
+                </p> 
             </div>
 
             <!-- TRANSACTIONS -->
@@ -162,367 +219,14 @@
                 <div id="addTransactionBtn" class="add-btn">+ Add Transaction</div>
                 <div style="clear:both;"></div>
 
-                <div class="transaction-list">
-                    <div class="transaction">
-                        <div class="t-left">Monthly Salary <br><span>Salary</span></div>
-                        <div class="green">+$5,000.00</div>
-                    </div>
-
-                    <div class="transaction">
-                        <div class="t-left">Coffee Shop <br><span>Food</span></div>
-                        <div class="red">-$4.50</div>
-                    </div>
-
-                    <div class="transaction">
-                        <div class="t-left">Grocery Store <br><span>Food</span></div>
-                        <div class="red">-$89.32</div>
-                    </div>
-
-                    <div class="transaction">
-                        <div class="t-left">Netflix Subscription <br><span>Entertainment</span></div>
-                        <div class="red">-$15.99</div>
-                    </div>
-
-                    <div class="transaction">
-                        <div class="t-left">Freelance Project <br><span>Freelance</span></div>
-                        <div class="green">+$1,200.00</div>
-                    </div>
+                <div class="transaction-list" id="transactionList">
+                    <!-- CHANGE: No hardcoded transaction items — JS will render them. -->
                 </div>
+
+                <p id="emptyMessage" style="color: gray; font-size:20px; font-weight: 700; text-align: center; margin-top: 5%;  ">No recent transactions</p>
             </div>
 
         </div>
     </div>
-    <script>
-        const ctx = document.getElementById("balanceChart").getContext("2d");
-
-        const labels = ["Jan 1", "Jan 5", "Jan 10", "Jan 15", "Jan 20", "Jan 25", "Today"];
-        const data = [2400, 2250, 3000, 2000, 2200, 2400, 2150];
-
-        new Chart(ctx, {
-            type: "line",
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: "Balance",
-                    data: data,
-                    borderColor: "#0cb463",
-                    backgroundColor: "rgba(26, 188, 156, 0.1)",
-                    tension: 0.45,
-                    borderWidth: 2,
-                    pointRadius: 0 // keep points invisible by default
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                // make chart respond when hovering anywhere vertically at the same x index
-                interaction: {
-                    mode: "index",
-                    intersect: false
-                },
-                // make hover points visible
-                elements: {
-                    point: {
-                        radius: 0,
-                        hoverRadius: 6
-                    }
-                },
-                scales: {
-                    x: {
-                        grid: {
-                            color: "rgba(234, 234, 234, 0.5)",
-                            borderColor: "#ccc"
-                        },
-                        ticks: {
-                            callback: (value, index) => labels[index]
-                        }
-                    },
-                    y: {
-                        min: 0,
-                        max: 3000,
-                        ticks: {
-                            stepSize: 750,
-                            callback: (value) => value
-                        },
-                        grid: {
-                            color: "rgba(234, 234, 234, 0.05)"
-                        }
-                    }
-                },
-                plugins: {
-                    legend: { display: false },
-                    tooltip: {
-                        enabled: true,
-                        callbacks: {
-                            title: (items) => {
-                                // show the date/title (e.g. "Jan 10")
-                                return items && items.length ? items[0].label : "";
-                            },
-                            label: (context) => {
-                                const v = context.raw;
-                                // format with commas and exactly two decimals, e.g. 2,400.00
-                                const formatted = Number(v).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-                                return `Balance: $${formatted}`;
-                            }
-                        }
-                    }
-                },
-                hover: {
-                    mode: "index",
-                    intersect: false
-                }
-            }
-        });
-
-        // Add Transaction Button
-    const addTransactionBtn = document.getElementById('addTransactionBtn');
-
-    addTransactionBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-
-        // Overlay
-        const modal = document.createElement('div');
-        modal.style.position = 'fixed';
-        modal.style.top = 0;
-        modal.style.left = 0;
-        modal.style.right = 0;
-        modal.style.bottom = 0;
-        modal.style.background = 'rgba(0,0,0,0.4)';
-        modal.style.display = 'flex';
-        modal.style.justifyContent = 'center';
-        modal.style.alignItems = 'center';
-        modal.style.zIndex = '2000';
-
-        // Modal content box
-        const box = document.createElement('div');
-        box.style.width = '430px';
-        box.style.background = '#fff';
-        box.style.borderRadius = '16px';
-        box.style.padding = '30px';
-        box.style.fontFamily = 'Inter, sans-serif';
-        box.style.position = 'relative';
-
-        
-        box.innerHTML = `
-            <h2 style="margin:0; font-weight:600; font-size:20px;">Add Transaction</h2>
-            <p style="margin-top:6px; color:#6c7a86; font-size:14px;">
-                Record a new income or expense transaction
-            </p>
-
-            <!-- Toggle -->
-            <div style="display:flex; background:#f2f4f7; padding:4px; border-radius:8px; gap:6px; margin-top:16px;">
-                <button id="expenseTab" 
-                    style="flex:1; padding:8px 0; border:none; background:#fff; border-radius:6px;
-                    cursor:pointer; font-weight:500;">Expense</button>
-
-                <button id="incomeTab" 
-                    style="flex:1; padding:8px 0; border:none; background:transparent; border-radius:6px;
-                    cursor:pointer; font-weight:500; color:#6c7a86;">Income</button>
-            </div>
-
-            <!-- FORM -->
-            <div style="margin-top:20px;">
-                <label style="font-size:14px; font-weight:500;">Amount *</label>
-                <div style="position:relative; width:100%; margin-top:6px; margin-bottom:16px;">
-                        <span id="amountDollar" style="position:absolute; left:12px; top:50%; transform:translateY(-50%); color:#6b6f73; pointer-events:none;">$</span>
-                        <input id="amountInput" type="number" step="0.01" inputmode="decimal" placeholder="0.00"
-                                style="width:100%; padding:10px 10px 10px 26px; border:1px solid #dce1e7; border-radius:8px; transition:0.2s;">
-                </div>
-
-                <!-- CUSTOM DROPDOWN (replaces native select) -->
-                <label style="font-size:14px; font-weight:500;">Category *</label>
-                <div id="categoryCustom" style="position:relative; margin-top:6px; margin-bottom:16px;">
-                    <button id="categoryTrigger" type="button"
-                        style="width:100%; text-align:left; padding:10px; border:1px solid #dce1e7; border-radius:8px; background:white; cursor:pointer;">
-                        Select Category
-                    </button>
-                    <ul id="categoryOptions"
-                        style="position:absolute; left:0; right:0; margin:6px 0 0 0; padding:6px 0; list-style:none;
-                            max-height:160px; overflow:auto; background:#fff; border:1px solid #e6e9ee; border-radius:8px;
-                            box-shadow:0 6px 18px rgba(0,0,0,0.08); display:none; z-index:3000;">
-                        <li data-value="Salary" style="padding:10px 12px; cursor:pointer;">Salary</li>
-                        <li data-value="Freelance" style="padding:10px 12px; cursor:pointer;">Freelance</li>
-                        <li data-value="Shopping" style="padding:10px 12px; cursor:pointer;">Shopping</li>
-                        <li data-value="Food" style="padding:10px 12px; cursor:pointer;">Food</li>
-                        <li data-value="Rent" style="padding:10px 12px; cursor:pointer;">Rent</li>
-                        <li data-value="Utilities" style="padding:10px 12px; cursor:pointer;">Utilities</li>
-                        <li data-value="Entertainment" style="padding:10px 12px; cursor:pointer;">Entertainment</li>
-                        <li data-value="Travel" style="padding:10px 12px; cursor:pointer;">Travel</li>
-                        <li data-value="Education" style="padding:10px 12px; cursor:pointer;">Education</li>
-                        <li data-value="Health" style="padding:10px 12px; cursor:pointer;">Health</li>
-                        <li data-value="Transportation" style="padding:10px 12px; cursor:pointer;">Transportation</li>
-                    </ul>
-                    <!-- hidden input to store the selected value so your existing submit logic can read it -->
-                    <input type="hidden" id="categoryValue" value="">
-                </div>
-
-                <label style="font-size:14px; font-weight:500;">Date *</label>
-                <input type="date" id="dateInput"
-                    style="width:100%; margin-top:6px; margin-bottom:16px; 
-                    padding:10px; border:1px solid #dce1e7; border-radius:8px; transition:0.2s;">
-
-                <label style="font-size:14px; font-weight:500;">Description *</label>
-                <input id="descriptionInput" type="text" placeholder="e.g., Grocery shopping, Rent..."
-                    style="width:100%; margin-top:6px; margin-bottom:18px; 
-                    padding:10px; border:1px solid #dce1e7; border-radius:8px; transition:0.2s;">
-
-                <label style="font-size:14px; font-weight:500;">Receipt (Optional)</label>
-                <div id="uploadBox"
-                    style="width:100%; height:110px; border:1.5px dashed #d4d9df; border-radius:12px;
-                    display:flex; align-items:center; justify-content:center; color:#7d8794;
-                    cursor:pointer; margin-top:8px; margin-bottom:22px;">
-                    Click to upload receipt image
-                </div>
-            </div>
-
-            <!-- Buttons -->
-            <div style="display:flex; justify-content:space-between; margin-top:10px;">
-                <button id="cancelBtn"
-                    style="padding:10px 24px; border-radius:8px; border:1px solid #d4d9df; background:#fff;
-                    cursor:pointer; font-weight:500;">Cancel</button>
-
-                <button id="submitBtn"
-                    style="padding:10px 24px; border-radius:8px; background:#0cb463; border:none; color:white;
-                    cursor:pointer; font-weight:500;">Add Transaction</button>
-            </div>
-        `;
-
-        modal.appendChild(box);
-        document.body.appendChild(modal);
-
-        // Button hover effects (your existing code)
-        const submitBtn = box.querySelector("#submitBtn");
-        const clearBtn = box.querySelector("#cancelBtn");
-
-        submitBtn.addEventListener("mouseenter", () => {
-            submitBtn.style.background = "rgba(12, 180, 99, 0.8)";   
-        });
-        submitBtn.addEventListener("mouseleave", () => {
-            submitBtn.style.background = "#0cb463";   
-        });
-
-        clearBtn.addEventListener("mouseenter", () => {
-            clearBtn.style.background = "#0cb463"; 
-            clearBtn.style.color = "white";  
-        });
-        clearBtn.addEventListener("mouseleave", () => {
-            clearBtn.style.background = "#d4d9df"; 
-            clearBtn.style.color = "black";  
-        });
-
-        // Toggle logic
-        const expenseTab = box.querySelector('#expenseTab');
-        const incomeTab = box.querySelector('#incomeTab');
-
-        expenseTab.onclick = () => {
-            expenseTab.style.background = '#fff';
-            expenseTab.style.color = '#000';
-            incomeTab.style.background = 'transparent';
-            incomeTab.style.color = '#6c7a86';
-        };
-
-        incomeTab.onclick = () => {
-            incomeTab.style.background = '#fff';
-            incomeTab.style.color = '#000';
-            expenseTab.style.background = 'transparent';
-            expenseTab.style.color = '#6c7a86';
-        };
-
-        // GREEN FOCUS EFFECT FOR *ALL* INPUTS (keeps your outline removal)
-        box.querySelectorAll('input[type="number"], input[type="date"], input[type="text"], input[type="hidden"]').forEach(field => {
-            field.addEventListener('focus', () => {
-                field.style.outline = 'none';
-                field.style.outlineColor = 'transparent';
-                field.style.border = '1.5px solid #0cb463';
-                field.style.boxShadow = '0 0 0 2px rgba(12,180,99,0.2)';
-            });
-            field.addEventListener('blur', () => {
-                // hidden input should not change border so skip it
-                if (field.type === 'hidden') return;
-                field.style.border = '1px solid #dce1e7';
-                field.style.boxShadow = 'none';
-            });
-        });
-
-        // -----------------------
-        // CUSTOM DROPDOWN LOGIC
-        // -----------------------
-        const trigger = box.querySelector('#categoryTrigger');
-        const optionsList = box.querySelector('#categoryOptions');
-        const options = Array.from(optionsList.querySelectorAll('li'));
-        const hiddenInput = box.querySelector('#categoryValue');
-
-        trigger.addEventListener('click', (ev) => {
-            ev.stopPropagation();
-            const isOpen = optionsList.style.display === 'block';
-            optionsList.style.display = isOpen ? 'none' : 'block';
-        });
-
-        // click on option (li)
-        optionsList.querySelectorAll('li').forEach(li => {
-            li.addEventListener('click', () => {
-                // close dropdown
-                optionsList.style.display = 'none';
-
-                // put selected value
-                trigger.innerText = li.innerText;
-
-                // apply focus style
-                trigger.style.border = "1.5px solid #0cb463";
-                trigger.style.boxShadow = "0 0 0 2px rgba(12,180,99,0.2)";
-            });
-        });
-
-        // close when clicking outside and remove focus
-        document.addEventListener('click', (ev) => {
-            if (!box.contains(ev.target)) {
-                optionsList.style.display = "none";
-
-                // remove focus effect
-                trigger.style.border = "1px solid #ccc";
-                trigger.style.boxShadow = "none";
-            }
-        });
-
-        // Hover style for options (green while hovered, revert after leave)
-        options.forEach(li => {
-            li.addEventListener('mouseenter', () => {
-                li.style.background = '#0cb463';
-                li.style.color = 'white';
-            });
-            li.addEventListener('mouseleave', () => {
-                li.style.background = '';
-                li.style.color = '';
-            });
-
-            // click selects value (but does NOT keep hover color)
-            li.addEventListener('click', (ev) => {
-                ev.stopPropagation();
-                const val = li.getAttribute('data-value');
-                trigger.textContent = val;
-                hiddenInput.value = val;
-                optionsList.style.display = 'none';
-            });
-        });
-
-        // Close modal handlers
-        box.querySelector('#cancelBtn').onclick = () => modal.remove();
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal) modal.remove();
-        });
-
-        // Submit handler: read hidden input for category
-        box.querySelector('#submitBtn').onclick = () => {
-            const amount = box.querySelector('#amountInput').value;
-            const category = box.querySelector('#categoryValue').value; // from custom dropdown
-            const date = box.querySelector('#dateInput').value;
-            const description = box.querySelector('#descriptionInput').value;
-
-            console.log({ amount, category, date, description });
-
-            modal.remove();
-        };
-    });
-    </script>
 </body>
 </html>

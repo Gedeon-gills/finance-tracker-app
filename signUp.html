@@ -51,6 +51,42 @@
         p {color: #807c7cff; font-size: 15px;}
 
         .messageDiv { background-color: hsl(327, 90%, 28%); color: white; padding: 10px 20px; border-radius: 5px; margin: 10px; font-size: 1rem; opacity: 0; animation: fadeOut 7s forwards; }
+        
+        @media (max-width: 768px) {
+
+            body { padding-top: 20px;  min-height: auto; flex-direction: column; }
+
+            .both { grid-template-columns: 1fr; width: 95%;  gap: 30px; margin-top: 80px; text-align:center; }
+
+            /* Welcome text area adjustments */
+            .welcoming h1 { font-size: 28px; }
+            .welcoming p { display: none; }
+            .welcoming ul li { display: none; }
+            .welcoming .logo { width: 80px; }
+
+            .container { width: 90%; padding: 25px; box-shadow: 0 3px 12px rgba(0,0,0,0.08); }
+
+            .tabs { margin-bottom: 15px; }
+            .tab {  padding: 10px; font-size: 14px; }
+            .tab.active { padding: 5px 10px; margin: 3px; }
+
+            label { font-size: 13px;  margin-bottom: 8px; }
+
+            input { padding: 10px; font-size: 14px; }
+
+            .form-group { margin-bottom: 14px; }
+
+            /* Buttons */
+            button { padding: 10px;  font-size: 14px;}
+
+            .google-btn { padding: 10px;  font-size: 14px; }
+
+            /* Divider */
+            .divider span { font-size: 14px; }
+            p { font-size: 14px; }
+
+            .messageDiv { font-size: 14px; padding: 8px 15px; margin: 5px 0; }
+        }
     </style>
 
 </head>
