@@ -64,7 +64,7 @@ const firebaseConfig = {
         }
       
                   // Hide topbar signout dropdown
-            if (topbarLogout) topbarLogout.style.display = "none";
+                  if (topbarLogout) topbarLogout.style.display = "none";
       
                   // Create modal
                   const modal = document.createElement('div');
@@ -145,7 +145,7 @@ const firebaseConfig = {
                           }
                       }
                   });
-            }
+              }
       
               // Attach logout events
               if (sidebarLogout) sidebarLogout.addEventListener('click', openLogoutModal);
