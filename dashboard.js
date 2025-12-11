@@ -504,7 +504,7 @@ import { getFirestore, collection, query, where, doc, getDoc, getDocs, addDoc  }
             }
 
             loadTransactions(); 
-            document.getElementById('welcomeUser').innerText = `Welcome!`; // will be replaced if userData exists
+            document.getElementById('welcomeUser').innerText = `Welcome!`; 
             document.getElementById('userFullName').innerText = "Loading...";
             document.getElementById('userEmail').innerText = user.email || "";
 
@@ -525,144 +525,144 @@ import { getFirestore, collection, query, where, doc, getDoc, getDocs, addDoc  }
     
 
         const sidebarLogout = document.getElementById('signoutBtn');
-const topbarLogout = document.getElementById('topbarSignout');
-const topbarUserIcon = document.querySelector(".bx-user");
+        const topbarLogout = document.getElementById('topbarSignout');
+        const topbarUserIcon = document.querySelector(".bx-user");
 
-const hamburger = document.getElementById("hamburgerMenu");
-const closeBtn = document.getElementById("close");
-const menu = document.querySelector(".menu");
+        const hamburger = document.getElementById("hamburgerMenu");
+        const closeBtn = document.getElementById("close");
+        const menu = document.querySelector(".menu");
 
-let menuWasOpen = false;
+        let menuWasOpen = false;
 
-// OPEN LOGOUT MODAL
-function openLogoutModal() {
+        // OPEN LOGOUT MODAL
+        function openLogoutModal() {
 
-    // Detect previous hamburger state BUT ONLY on mobile
-    if (window.innerWidth <= 768) {
-        menuWasOpen = menu.classList.contains("open");
+            // Detect previous hamburger state BUT ONLY on mobile
+            if (window.innerWidth <= 768) {
+                menuWasOpen = menu.classList.contains("open");
 
-        menu.classList.remove("open");
-        document.body.classList.remove("menu-open");
-        document.body.classList.remove("body-no-scroll");
-        closeBtn.style.display = "none";
-        hamburger.style.display = menuWasOpen ? "none" : "block";
-    }
-
-    // Hide topbar signout dropdown
-    if (topbarLogout) topbarLogout.style.display = "none";
-
-    // Create modal
-    const modal = document.createElement('div');
-    modal.style.position = 'fixed';
-    modal.style.top = '0';
-    modal.style.left = '0';
-    modal.style.right = '0';
-    modal.style.bottom = '0';
-    modal.style.background = 'rgba(0,0,0,0.5)';
-    modal.style.display = 'flex';
-    modal.style.justifyContent = 'center';
-    modal.style.alignItems = 'center';
-    modal.style.zIndex = '1000';
-
-    const content = document.createElement('div');
-    content.style.background = 'white';
-    content.style.padding = '20px 30px';
-    content.style.borderRadius = '10px';
-    content.style.textAlign = 'center';
-    content.style.maxWidth = '300px';
-
-    const message = document.createElement('p');
-    message.innerText = 'Are you sure you want to logout?';
-    message.style.marginBottom = '20px';
-
-    const buttons = document.createElement('div');
-    buttons.style.display = 'flex';
-    buttons.style.justifyContent = 'space-around';
-
-    const yesBtn = document.createElement('button');
-    yesBtn.innerText = 'Yes';
-    yesBtn.style.padding = '8px 20px';
-    yesBtn.style.background = '#0cb463';
-    yesBtn.style.color = 'white';
-    yesBtn.style.border = 'none';
-    yesBtn.style.borderRadius = '5px';
-
-    const noBtn = document.createElement('button');
-    noBtn.innerText = 'No';
-    noBtn.style.padding = '8px 20px';
-    noBtn.style.background = '#ccc';
-    noBtn.style.border = 'none';
-    noBtn.style.borderRadius = '5px';
-
-    // Append
-    buttons.appendChild(yesBtn);
-    buttons.appendChild(noBtn);
-    content.appendChild(message);
-    content.appendChild(buttons);
-    modal.appendChild(content);
-    document.body.appendChild(modal);
-
-    // YES → Log Out
-    yesBtn.addEventListener('click', () => {
-        auth.signOut().then(() => {
-            localStorage.removeItem('loggedInUserId');
-            window.location.href = 'signUp.html';
-        });
-    });
-
-    // NO → Restore menu ONLY for mobile
-    noBtn.addEventListener('click', () => {
-        modal.remove();
-
-        if (window.innerWidth <= 768) {
-            if (menuWasOpen) {
-                menu.classList.add("open");
-                document.body.classList.add("menu-open");
-                document.body.classList.add("body-no-scroll");
-                closeBtn.style.display = "block";
-                hamburger.style.display = "none";
-            } else {
                 menu.classList.remove("open");
                 document.body.classList.remove("menu-open");
                 document.body.classList.remove("body-no-scroll");
                 closeBtn.style.display = "none";
-                hamburger.style.display = "block";
+                hamburger.style.display = menuWasOpen ? "none" : "block";
             }
+
+            // Hide topbar signout dropdown
+            if (topbarLogout) topbarLogout.style.display = "none";
+
+            // Create modal
+            const modal = document.createElement('div');
+            modal.style.position = 'fixed';
+            modal.style.top = '0';
+            modal.style.left = '0';
+            modal.style.right = '0';
+            modal.style.bottom = '0';
+            modal.style.background = 'rgba(0,0,0,0.5)';
+            modal.style.display = 'flex';
+            modal.style.justifyContent = 'center';
+            modal.style.alignItems = 'center';
+            modal.style.zIndex = '1000';
+
+            const content = document.createElement('div');
+            content.style.background = 'white';
+            content.style.padding = '20px 30px';
+            content.style.borderRadius = '10px';
+            content.style.textAlign = 'center';
+            content.style.maxWidth = '300px';
+
+            const message = document.createElement('p');
+            message.innerText = 'Are you sure you want to logout?';
+            message.style.marginBottom = '20px';
+
+            const buttons = document.createElement('div');
+            buttons.style.display = 'flex';
+            buttons.style.justifyContent = 'space-around';
+
+            const yesBtn = document.createElement('button');
+            yesBtn.innerText = 'Yes';
+            yesBtn.style.padding = '8px 20px';
+            yesBtn.style.background = '#0cb463';
+            yesBtn.style.color = 'white';
+            yesBtn.style.border = 'none';
+            yesBtn.style.borderRadius = '5px';
+
+            const noBtn = document.createElement('button');
+            noBtn.innerText = 'No';
+            noBtn.style.padding = '8px 20px';
+            noBtn.style.background = '#ccc';
+            noBtn.style.border = 'none';
+            noBtn.style.borderRadius = '5px';
+
+            // Append
+            buttons.appendChild(yesBtn);
+            buttons.appendChild(noBtn);
+            content.appendChild(message);
+            content.appendChild(buttons);
+            modal.appendChild(content);
+            document.body.appendChild(modal);
+
+            // YES → Log Out
+            yesBtn.addEventListener('click', () => {
+                auth.signOut().then(() => {
+                    localStorage.removeItem('loggedInUserId');
+                    window.location.href = 'signUp.html';
+                });
+            });
+
+            // NO → Restore menu ONLY for mobile
+            noBtn.addEventListener('click', () => {
+                modal.remove();
+
+                if (window.innerWidth <= 768) {
+                    if (menuWasOpen) {
+                        menu.classList.add("open");
+                        document.body.classList.add("menu-open");
+                        document.body.classList.add("body-no-scroll");
+                        closeBtn.style.display = "block";
+                        hamburger.style.display = "none";
+                    } else {
+                        menu.classList.remove("open");
+                        document.body.classList.remove("menu-open");
+                        document.body.classList.remove("body-no-scroll");
+                        closeBtn.style.display = "none";
+                        hamburger.style.display = "block";
+                    }
+                }
+            });
         }
-    });
-}
 
-// Attach logout events
-if (sidebarLogout) sidebarLogout.addEventListener('click', openLogoutModal);
-if (topbarLogout) topbarLogout.addEventListener('click', openLogoutModal);
+        // Attach logout events
+        if (sidebarLogout) sidebarLogout.addEventListener('click', openLogoutModal);
+        if (topbarLogout) topbarLogout.addEventListener('click', openLogoutModal);
 
-// HAMBURGER MENU (mobile only)
-hamburger.addEventListener("click", () => {
-    menu.classList.add("open");
-    document.body.classList.add("menu-open");
-    document.body.classList.add("body-no-scroll");
-    hamburger.style.display = "none";
-    closeBtn.style.display = "block";
-});
+        // HAMBURGER MENU (mobile only)
+        hamburger.addEventListener("click", () => {
+            menu.classList.add("open");
+            document.body.classList.add("menu-open");
+            document.body.classList.add("body-no-scroll");
+            hamburger.style.display = "none";
+            closeBtn.style.display = "block";
+        });
 
-closeBtn.addEventListener("click", () => {
-    menu.classList.remove("open");
-    document.body.classList.remove("menu-open");
-    document.body.classList.remove("body-no-scroll");
-    hamburger.style.display = "block";
-    closeBtn.style.display = "none";
-});
+        closeBtn.addEventListener("click", () => {
+            menu.classList.remove("open");
+            document.body.classList.remove("menu-open");
+            document.body.classList.remove("body-no-scroll");
+            hamburger.style.display = "block";
+            closeBtn.style.display = "none";
+        });
 
-// TOPBAR SIGNOUT DROPDOWN
-topbarUserIcon.addEventListener("click", (e) => {
-    e.stopPropagation();
-    topbarLogout.style.display =
-        topbarLogout.style.display === "block" ? "none" : "block";
-});
+        // TOPBAR SIGNOUT DROPDOWN
+        topbarUserIcon.addEventListener("click", (e) => {
+            e.stopPropagation();
+            topbarLogout.style.display =
+                topbarLogout.style.display === "block" ? "none" : "block";
+        });
 
-document.addEventListener("click", (e) => {
-    if (!topbarUserIcon.contains(e.target) &&
-        !topbarLogout.contains(e.target)) {
-        topbarLogout.style.display = "none";
-    }
-});
+        document.addEventListener("click", (e) => {
+            if (!topbarUserIcon.contains(e.target) &&
+                !topbarLogout.contains(e.target)) {
+                topbarLogout.style.display = "none";
+            }
+        });

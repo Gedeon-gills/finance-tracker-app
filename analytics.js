@@ -1,9 +1,9 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
-import { getAuth, onAuthStateChanged, EmailAuthProvider, reauthenticateWithCredential, updatePassword, deleteUser } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
-import { getFirestore, doc, getDoc, updateDoc, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
+import { getAuth, onAuthStateChanged} from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
+import { getFirestore, collection, query, where, doc, getDoc, getDocs, addDoc  } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
 
 // Your web app's Firebase configuration
-  const firebaseConfig = {
+    const firebaseConfig = {
     apiKey: "AIzaSyCnSZsrVZqsUPM0PblRp_iIL_JHL62qGig",
     authDomain: "finance-tracker-app-57903.firebaseapp.com",
     projectId: "finance-tracker-app-57903",
@@ -13,130 +13,117 @@ import { getFirestore, doc, getDoc, updateDoc, setDoc, deleteDoc } from "https:/
   };
 
   // Initialize Firebase
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
+      const app = initializeApp(firebaseConfig);
+  
+      const auth = getAuth(app);
+      const db = getFirestore(app);
 
-    onAuthStateChanged(auth, async (user) => {
-        if (!user) {
-            window.location.href = "signUp.html";
-            return;
-        }
+      // ---------- Income vs Expense (Bar Chart) ----------
+        const ctx1 = document.getElementById("incomeExpenseChart").getContext("2d");
 
-        document.getElementById("userEmail").textContent = user.email;
-        document.getElementById("email").value = user.email;
+        new Chart(ctx1, {
+            type: "bar",
+            data: {
+                labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
+                datasets: [
+                    {
+                        label: "income",
+                        data: [4000, 3000, 2000, 2500, 1500, 2300],
+                        backgroundColor: "#22c55e",
+                        borderRadius: 6
+                    },
+                    {
+                        label: "expense",
+                        data: [2000, 1200, 10000, 3500, 4500, 2800],
+                        backgroundColor: "#ef4444",
+                        borderRadius: 6
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        min: 0,
+                        max: 10000,
+                        ticks: {
+                            stepSize: 2500,
+                            callback: (value) => value
+                        },
+                        grid: {
+                            color: "rgba(0,0,0,0.05)"
+                        }
+                    },
+                    x: {
+                        grid: { display: false }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        position: "bottom"
+                    }
+                }
+            }
+        });
 
-        const userRef = doc(db, "users", user.uid);
-        const snap = await getDoc(userRef);
 
-        if (snap.exists()) {
-            const data = snap.data();
+        // ---------- Spending by Category (Pie Chart) ----------
+        const ctx2 = document.getElementById("spendingChart").getContext("2d");
 
-            document.getElementById("full-name").value = data.fullName || "";
-            document.getElementById("userFullName").textContent = data.fullName || "No Name";
-            document.getElementById("currency").value = data.currency || "USD Dollar(USD)";
-            document.getElementById("email-notifications").checked = data.emailNotifications || false;
+        new Chart(ctx2, {
+            type: "pie",
+            data: {
+                labels: ["Food", "Transportation", "Entertainment", "Utilities", "Other"],
+                datasets: [{
+                    data: [450.00, 320.00, 280.00, 200.00, 150.00],
+                    backgroundColor: [
+                        "#22c55e",
+                        "#06b6d4",
+                        "#f59e0b",
+                        "#ef4444",
+                        "#8b5cf6"
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const label = context.label || "";
+                                const value = context.raw;
+                                return `${label}: $${value.toFixed(2)}`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
 
-        } else {
-            // Create profile if doesn't exist
-            await setDoc(userRef, {
-                fullName: "",
-                currency: "USD Dollar(USD)",
-                emailNotifications: false
+        onAuthStateChanged(auth, async (user) => {
+            if (!user) {
+                window.location.href = "signUp.html";
+                return;
+            }
+            document.getElementById('userFullName').innerText = "Loading...";
+            document.getElementById('userEmail').innerText = user.email || "";
+        
+                    // If user IS logged in → load data
+            const docRef = doc(db, "users", user.uid);
+                getDoc(docRef).then((docSnap) => {
+                    if (docSnap.exists()) {
+                        const userData = docSnap.data();
+                        document.getElementById('userFullName').innerText = userData.fullName;
+                        document.getElementById('userEmail').innerText = userData.email;
+                    }        
+                });
             });
-        }
-    });
 
-    
-    // UPDATE FULL NAME
-    document.getElementById("full-name").addEventListener("change", async () => {
-        const user = auth.currentUser;
-        const name = document.getElementById("full-name").value;
-
-        await updateDoc(doc(db, "users", user.uid), { fullName: name });
-
-        // Update top bar immediately
-        document.getElementById("userFullName").textContent = name;
-    });
-
-    // CHANGE PASSWORD (with re-auth + early password check)
-
-    document.querySelector(".change-btn").addEventListener("click", async () => {
-        const user = auth.currentUser;
-
-        // Step 1: Ask for current password
-        const oldPassword = prompt("Enter your current password:");
-        if (!oldPassword) return;
-
-        try {
-            
-            const credential = EmailAuthProvider.credential(user.email, oldPassword);
-            await reauthenticateWithCredential(user, credential);
-
-        } catch (error) {
-            alert("❌ Incorrect current password. Please try again.");
-            return;
-        }
-
-        
-        const newPassword = prompt("Enter your new password:");
-        if (!newPassword) return;
-
-        
-        if (newPassword.length < 8) {
-            alert("❌ Password should be at least 8 characters long.");
-            return;
-        }
-
-        try {
-            await updatePassword(user, newPassword);
-            alert("✅ Password changed successfully!");
-
-        } catch (error) {
-            alert("Error: " + error.message);
-        }
-    });
-
-    // UPDATE CURRENCY
-
-    document.getElementById("currency").addEventListener("change", async () => {
-        const user = auth.currentUser;
-
-        await updateDoc(doc(db, "users", user.uid), {
-            currency: document.getElementById("currency").value
-        });
-    });
-
-    // EMAIL NOTIFICATIONS TOGGLE
-
-    document.getElementById("email-notifications").addEventListener("change", async () => {
-        const user = auth.currentUser;
-
-        await updateDoc(doc(db, "users", user.uid), {
-            emailNotifications: document.getElementById("email-notifications").checked
-        });
-    });
-
-    // DELETE ACCOUNT
-
-    document.querySelector(".delete-btn").addEventListener("click", async () => {
-        if (!confirm("Are you sure? This action cannot be undone.")) return;
-
-        const user = auth.currentUser;
-
-        try {
-            await deleteDoc(doc(db, "users", user.uid));
-            await deleteUser(user);
-
-            alert("Account deleted successfully.");
-            window.location.href = "signup.html";
-
-        } catch (error) {
-            alert("Error: " + error.message);
-        }
-    });
-
-    const sidebarLogout = document.getElementById('signoutBtn');
+            const sidebarLogout = document.getElementById('signoutBtn');
         const topbarLogout = document.getElementById('topbarSignout');
         const topbarUserIcon = document.querySelector(".bx-user");
 

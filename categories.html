@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href='https://cdn.jsdelivr.net/npm/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet">
+    <script type="module" src="categories.js" defer></script>
 
     <title>Categories Transactions</title>
     <style>
@@ -14,10 +15,10 @@
 
             /* SIDEBAR */
             .sidebar { width: 250px; background: #ffffff; height: 100vh; padding: 30px 20px; border-right: 1px solid #e6e6e6; position: fixed; }
-
             .sidebar h2 { color: #0cb463; margin-bottom: 5px; font-size: 22px; font-weight: 700; }
-
             .sidebar small { color: #64748b; }
+
+            .hamburgerMenu, .close { display: none; }
 
             .menu { margin-top: 40px; }
             .menu-item { display: flex; align-items: center; gap: 10px; text-decoration: none; padding: 12px; margin-bottom: 10px; border-radius: 10px; cursor: pointer; color: #475569; font-weight: bold; }
@@ -42,6 +43,9 @@
             .user-info h4 { margin-bottom: 3px; }
             .user-info small { color: #64748b; font-size: 14px; }
             .user-info i { font-size: 30px; color: #64748b; background-color: rgba(100, 116, 139, 0.1); padding: 8px; border-radius: 50%; }
+
+            .topbar-signout { position: absolute; top: 70px; right: 20px; background: #fff; color: #dc2626; padding: 12px 18px; border-radius: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); display: none; z-index: 9999; cursor: pointer; }
+            .topbar-signout:hover { background: #0cb463; color: white; }
 
             /* MAIN CONTENT */
             .main { max-width: 1200px; width: 100%; margin: 90px auto; }
@@ -109,7 +113,41 @@
             
             .color-bullet { display: inline-block; width: 12px; height: 12px; border-radius: 50%; margin-right: 8px; vertical-align: middle; box-shadow: 0 0 0 1px rgba(0,0,0,0.06) inset; }
 
+            @media (max-width: 768px) {
+                body { flex-direction: column; }
 
+                .sidebar { width: 100%; height: auto; position: relative; padding: 15px 20px; border-right: none; border-bottom: 1px solid #e6e6e6; }
+
+                .menu { display: none; position: fixed; top: 40px; left: 0; width: 100%; height: calc(100vh - 70px); background: #ffffff; z-index: 9990; flex-direction: column; padding: 20px; overflow-y: auto; }
+                .menu.open { display: flex; }
+                .body-no-scroll { height: 100vh; overflow: hidden; }
+
+                .hamburgerMenu { display: block; font-size: 26px; cursor: pointer; position: absolute; top: 20px; right: 20px; color: #0cb463; font-weight: bold; z-index: 10001;}
+
+                .close { display: none; font-size: 34px; cursor: pointer; position: absolute; top: 20px; right: 20px; color: #0cb463; font-weight: bold; z-index: 10002; }
+
+                .sidebar .signout { display: none; }
+                .menu-open .signout { display: block; position: fixed;  bottom: 20px; width: 350px; padding: 12px; text-align: center; background: #fff; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); z-index: 10005; }
+                .sidebar.open { left: 0; }
+
+                .content { margin-left: 0; padding: 10px; width: 100%; }
+
+                .topbar { padding: 15px 20px;  margin-bottom: 20px; }
+                .user-info h4 { font-size: 13px;}
+                .user-info small { font-size: 11px;}
+                .user-info i { font-size: 20px; }
+                .main { margin: 20px auto !important; padding: 0 10px; }
+
+                .welcoming { flex-direction: column; align-items: flex-start; gap: 10px; }
+                .add-btn { padding: 10px 16px; width: 100%; text-align: center;}
+                .cards { flex-direction: column; width: 100% !important; }
+                .card { width: 100% !important; }
+                .transaction { flex-direction: column; align-items: flex-start; gap: 6px; padding: 16px; }
+                .title { font-size: 16px; }
+                .meta { font-size: 12px; }
+                .right { width: 100%; justify-content: flex-end; }
+                .actions i { font-size: 22px; }
+            }
             
     </style>
 </head>
@@ -122,13 +160,19 @@
 
         <div class="menu">
             <a class="menu-item" href="dashboard.html">📊 Dashboard</a>
-            <a class="menu-item " href="transaction.html">📄 Transactions</a>
+            <a class="menu-item" href="transaction.html">📄 Transactions</a>
             <a class="menu-item active" href="categories.html">🏷️ Categories</a>
             <a class="menu-item" href="analytics.html">📈 Analytics</a>
             <a class="menu-item" href="setting.html">⚙️ Settings</a>
         </div>
+        <div class="hamburgerMenu" id="hamburgerMenu">
+                ☰
+            </div>
+            <div class="close" id="close">
+                &times;
+            </div>
 
-        <div class="signout">↪ Sign Out</div>
+        <div id="signoutBtn" class="signout">↪ Sign Out</div>
     </div>
     
     <div class="content">
@@ -138,11 +182,15 @@
             <h2>Categories</h2>
             <div class="user-info">
                 <div class="user-text">
-                    <h4>John Doe</h4>
-                    <small>john@example.com</small>
+                    <h4 id="userFullName" >John Doe</h4>
+                    <small id="userEmail" >john@example.com</small>
                 </div>
                 <i class='bx  bx-user'></i> 
             </div>
+        </div>
+
+        <div id="topbarSignout" class="topbar-signout">
+            ↪ Sign Out
         </div>
         
         <!-- MAIN CONTENT -->
@@ -280,280 +328,6 @@
             </div>
         </div>
     </div>
-    <script>
-        const addCategoryBtn = document.getElementById('addCategoryBtn');
-
-        addCategoryBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-
-            // Overlay
-            const modal = document.createElement('div');
-            modal.style.position = 'fixed';
-            modal.style.top = 0;
-            modal.style.left = 0;
-            modal.style.right = 0;
-            modal.style.bottom = 0;
-            modal.style.background = 'rgba(0,0,0,0.4)';
-            modal.style.display = 'flex';
-            modal.style.justifyContent = 'center';
-            modal.style.alignItems = 'center';
-            modal.style.zIndex = '2000';
-
-            // Modal content box
-            const box = document.createElement('div');
-            box.style.width = '430px';
-            box.style.background = '#fff';
-            box.style.borderRadius = '16px';
-            box.style.padding = '30px';
-            box.style.fontFamily = 'Inter, sans-serif';
-            box.style.position = 'relative';
-
-            
-            box.innerHTML = `
-                <h2 style="margin:0; font-weight:600; font-size:20px;">Add Category</h2>
-
-                <!-- FORM -->
-                <div style="margin-top:20px;">
-                    <label style="font-size:14px; font-weight:700;">Name</label>
-                        <input id="nameInput" type="text" placeholder="Category Name"
-                            style="width:100%; margin-top:6px; margin-bottom:18px; 
-                            padding:10px; border:1px solid #dce1e7; border-radius:8px; transition:0.2s;">
-                    
-
-                    <!-- CUSTOM DROPDOWN (replaces native select) -->
-                    <label style="font-size:14px; font-weight:700;">Type </label>
-                    <div id="typeCustom" style="position:relative; margin-top:6px; margin-bottom:16px;">
-                        <button id="typeTrigger" type="button"
-                            style="width:100%; text-align:left; padding:10px; border:1px solid #dce1e7; border-radius:8px; background:white; cursor:pointer;">
-                            Select Type 
-                        </button>
-                        <ul id="typeOptions"
-                            style="position:absolute; left:0; right:0; margin:6px 0 0 0; padding:6px 0; list-style:none;
-                                max-height:160px; overflow:auto; background:#fff; border:1px solid #e6e9ee; border-radius:8px;
-                                box-shadow:0 6px 18px rgba(0,0,0,0.08); display:none; z-index:3000;">
-                            <li data-value="Income" style="padding:10px 12px; cursor:pointer;" bullet>Income</li>
-                            <li data-value="Expense" style="padding:10px 12px; cursor:pointer;">Expense</li>
-                        </ul>
-                        <!-- hidden input to store the selected value so your existing submit logic can read it -->
-                        <input type="hidden" id="colorValue" value="">
-                    </div>
-
-                    <label style="font-size:14px; font-weight:700;">Color </label>
-                    <div id="colorCustom" style="position:relative; margin-top:6px; margin-bottom:16px;">
-                        <button id="colorTrigger" type="button"
-                            style="width:100%; text-align:left; padding:10px; border:1px solid #dce1e7; border-radius:8px; background:white; cursor:pointer;">
-                            Select Color 
-                        </button>
-                        <ul id="colorOptions"
-                            style="position:absolute; left:0; right:0; margin:6px 0 0 0; padding:6px 0; list-style:none;
-                                max-height:160px; overflow:auto; background:#fff; border:1px solid #e6e9ee; border-radius:8px;
-                                box-shadow:0 6px 18px rgba(0,0,0,0.08); display:none; z-index:3000;">
-                            <li data-value="Red"     data-color="#ff3b30" style="padding:10px 12px; list-style:none; cursor:pointer;">Red</li>
-                            <li data-value="Green"   data-color="#34c759" style="padding:10px 12px; list-style:none; cursor:pointer;">Green</li>
-                            <li data-value="Blue"    data-color="#007aff" style="padding:10px 12px; list-style:none; cursor:pointer;">Blue</li>
-                            <li data-value="Orange"  data-color="#ff9500" style="padding:10px 12px; list-style:none; cursor:pointer;">Orange</li>
-                            <li data-value="Purple"  data-color="#af52de" style="padding:10px 12px; list-style:none; cursor:pointer;">Purple</li>
-                            <li data-value="Pink"    data-color="#ff2d55" style="padding:10px 12px; list-style:none; cursor:pointer;">Pink</li>
-                            <li data-value="Yellow"  data-color="#ffcc00" style="padding:10px 12px; list-style:none; cursor:pointer;">Yellow</li>
-                            <li data-value="Emerald" data-color="#2ecc71" style="padding:10px 12px; list-style:none; cursor:pointer;">Emerald</li>
-                            <li data-value="Gray"    data-color="#8e8e93" style="padding:10px 12px; list-style:none; cursor:pointer;">Gray</li>
-                        </ul>
-                        <!-- hidden input to store the selected value so your existing submit logic can read it -->
-                        <input type="hidden" id="colorValue" value="">
-                    </div>
-
-                    
-
-                </div>
-
-                <!-- Buttons -->
-                <div style="display:flex; justify-content:space-between; margin-top:10px;">
-                    <button id="cancelBtn"
-                        style="padding:10px 24px; border-radius:8px; border:1px solid #d4d9df; background:#fff;
-                        cursor:pointer; font-weight:500;">Cancel</button>
-
-                    <button id="submitBtn"
-                        style="padding:10px 24px; border-radius:8px; background:#0cb463; border:none; color:white;
-                        cursor:pointer; font-weight:500;">Create</button>
-                </div>
-            `;
-
-            
-
-            modal.appendChild(box);
-            document.body.appendChild(modal);
-
-            
-            // Button hover effects (your existing code)
-            const submitBtn = box.querySelector("#submitBtn");
-            const clearBtn = box.querySelector("#cancelBtn");
-
-            submitBtn.addEventListener("mouseenter", () => {
-                submitBtn.style.background = "rgba(12, 180, 99, 0.8)";   
-            });
-            submitBtn.addEventListener("mouseleave", () => {
-                submitBtn.style.background = "#0cb463";   
-            });
-
-            clearBtn.addEventListener("mouseenter", () => {
-                clearBtn.style.background = "#0cb463"; 
-                clearBtn.style.color = "white";  
-            });
-            clearBtn.addEventListener("mouseleave", () => {
-                clearBtn.style.background = "#d4d9df"; 
-                clearBtn.style.color = "black";  
-            });
-
-
-            // GREEN FOCUS EFFECT FOR *ALL* INPUTS (keeps your outline removal)
-            box.querySelectorAll('input[type="number"], input[type="date"], input[type="text"], input[type="hidden"]').forEach(field => {
-                field.addEventListener('focus', () => {
-                    field.style.outline = 'none';
-                    field.style.outlineColor = 'transparent';
-                    field.style.border = '1.5px solid #0cb463';
-                    field.style.boxShadow = '0 0 0 2px rgba(12,180,99,0.2)';
-                });
-                field.addEventListener('blur', () => {
-                    // hidden input should not change border so skip it
-                    if (field.type === 'hidden') return;
-                    field.style.border = '1px solid #dce1e7';
-                    field.style.boxShadow = 'none';
-                });
-            });
-
-            
-            // CUSTOM DROPDOWN LOGIC
-            const typeTrigger = box.querySelector('#typeTrigger');
-            const colorTrigger = box.querySelector('#colorTrigger');
-
-            const typeOptionsList = box.querySelector('#typeOptions');
-            const colorOptionsList = box.querySelector('#colorOptions');
-
-            const typeOptions = typeOptionsList.querySelectorAll("li");
-            const colorOptions = colorOptionsList.querySelectorAll("li");
-
-            const hiddenType = box.querySelector('#typeValue');
-            const hiddenColor = box.querySelector('#colorValue');
-            
-
-            // Close all
-            function closeAllDropdowns() {
-                typeOptionsList.style.display = "none";
-                colorOptionsList.style.display = "none";
-            }
-
-            //  Open Type
-            typeTrigger.addEventListener("click", (e) => {
-                e.stopPropagation();
-
-                // Close the other dropdown
-                colorOptionsList.style.display = "none";
-
-                // Toggle type dropdown
-                typeOptionsList.style.display =
-                    typeOptionsList.style.display === "block" ? "none" : "block";
-
-                // Add green border
-                typeTrigger.style.border = "1.5px solid #0cb463";
-                typeTrigger.style.boxShadow = "0 0 0 2px rgba(12,180,99,0.2)";
-            });
-
-            colorTrigger.addEventListener("click", (e) => {
-                e.stopPropagation();
-
-                // Close the other dropdown
-                typeOptionsList.style.display = "none";
-
-                // Toggle color dropdown
-                colorOptionsList.style.display =
-                    colorOptionsList.style.display === "block" ? "none" : "block";
-
-                // Add green border
-                colorTrigger.style.border = "1.5px solid #0cb463";
-                colorTrigger.style.boxShadow = "0 0 0 2px rgba(12,180,99,0.2)";
-            });
-
-            // When selecting TYPE → close dropdown
-            typeOptions.forEach(li => {
-                li.addEventListener("click", (e) => {
-                    e.stopPropagation();
-
-                    const value = li.dataset.value;
-
-                    // remove previous ticks
-                    typeOptions.forEach(opt => opt.classList.remove("selected-option"));
-
-                    // add tick to this option
-                    li.classList.add("selected-option");
-
-                    // update button
-                    typeTrigger.textContent = value;
-                    hiddenType.value = value;
-
-                    typeOptionsList.style.display = "none";
-                    typeTrigger.style.border = "1.5px solid #0cb463";
-                    typeTrigger.style.boxShadow = "0 0 0 2px rgba(12,180,99,0.2)";
-                });
-            });
-            
-
-            //  When selecting COLOR → keep bullet + close dropdown
-            colorOptions.forEach(li => {
-                li.addEventListener("click", (e) => {
-                    e.stopPropagation();
-
-                    const value = li.dataset.value;
-                    const bulletColor = li.dataset.color;
-
-                    // remove previous ticks
-                    colorOptions.forEach(opt => opt.classList.remove("selected-option"));
-
-                    // add tick to this one
-                    li.classList.add("selected-option");
-
-                    // update button text with bullet
-                    hiddenColor.value = value;
-                    colorTrigger.innerHTML = `
-                        <span class="color-bullet" style="background:${bulletColor};"></span>
-                        ${value}
-                    `;
-
-                    colorOptionsList.style.display = "none";
-                    colorTrigger.style.border = "1.5px solid #0cb463";
-                    colorTrigger.style.boxShadow = "0 0 0 2px rgba(12,180,99,0.2)";
-                });
-            });
-
-
-
-            
-            // Click outside → close everything
-            
-            document.addEventListener("click", (e) => {
-                if (!box.contains(e.target)) {
-                    closeAllDropdowns();
-                }
-            });
-
-
-
-            // Close modal handlers
-            box.querySelector('#cancelBtn').onclick = () => modal.remove();
-            modal.addEventListener('click', (e) => {
-                if (e.target === modal) modal.remove();
-            });
-
-            // Submit handler: read hidden input for type
-            box.querySelector('#submitBtn').onclick = () => {
-                const type = box.querySelector('#typeValue').value; // from custom dropdown
-                const color = box.querySelector('#colorValue').value; // from custom dropdown
-                const name = box.querySelector('#nameInput').value;
-
-                console.log({ type, color, name });
-                modal.remove();
-            };
-        });
-    </script>
 
 </body>
 </html>
